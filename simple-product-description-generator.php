@@ -30,3 +30,46 @@ function spdg_meta_box_callback($post) {
     echo '<textarea id="spdg_generated_description" rows="6" style="width:100%;"></textarea>';
 }
 
+add_action('wp_ajax_generate_product_description', 'spdg_generate_product_description');
+add_action('wp_ajax_nopriv_generate_product_description', 'spdg_generate_product_description');
+
+function spdg_generate_product_description() {
+    $product_name = sanitize_text_field($_POST['product_name']);
+    $product_features = sanitize_text_field($_POST['product_features']);
+
+    // Prepare the prompt for the OpenAI API
+    $prompt = "Write a product description for a product called '$product_name' with the following features: $product_features";
+
+    // Make the API call to OpenAI
+    $api_key = 'sk-k8q9fBP5u8akez5JuZXbPCccJKy4g7UPerL5GckSldT3BlbkFJgSrgBSvbzWdT_HefJl6pmfwUHFeyDsJyTYV1w2pv4A';  // Replace with your OpenAI API key
+    $endpoint = 'https://api.openai.com/v1/completions';
+    $headers = array(
+        'Authorization: Bearer ' . $api_key,
+        'Content-Type: application/json'
+    );
+    
+    $data = array(
+        'model' => 'text-davinci-003',  // Use a specific GPT model
+        'prompt' => $prompt,
+        'max_tokens' => 200
+    );
+
+    $response = wp_remote_post($endpoint, array(
+        'headers' => $headers,
+        'body' => json_encode($data),
+        'timeout' => 60
+    ));
+
+    if (is_wp_error($response)) {
+        wp_send_json_error('Error in API call.');
+    } else {
+        $body = wp_remote_retrieve_body($response);
+        $result = json_decode($body, true);
+        $generated_description = $result['choices'][0]['text'];
+
+        wp_send_json($generated_description);
+    }
+
+    wp_die();
+}
+
