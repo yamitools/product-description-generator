@@ -5,9 +5,20 @@ jQuery(document).ready(function($) {
         var productName = $('#spdg_product_name').val();
         var productFeatures = $('#spdg_product_features').val();
 
-        // Replace with your API call to generate a description
-        var description = 'Generated description for ' + productName + ' with features: ' + productFeatures;
-
-        $('#spdg_generated_description').val(description);
+        $.ajax({
+            url: ajaxurl,  // WordPress-specific variable that points to admin-ajax.php
+            type: 'POST',
+            data: {
+                action: 'generate_product_description',
+                product_name: productName,
+                product_features: productFeatures
+            },
+            success: function(response) {
+                $('#spdg_generated_description').val(response);
+            },
+            error: function() {
+                alert('Failed to generate description. Please try again.');
+            }
+        });
     });
 });
