@@ -34,11 +34,19 @@ add_action('wp_ajax_generate_product_description', 'spdg_generate_product_descri
 add_action('wp_ajax_nopriv_generate_product_description', 'spdg_generate_product_description');
 
 function spdg_generate_product_description() {
+    
+    // Debugging: Check if the function is called
+    error_log('spdg_generate_product_description called');
+    
     $product_name = sanitize_text_field($_POST['product_name']);
     $product_features = sanitize_text_field($_POST['product_features']);
 
+    error_log('Product Name: ' . $product_name);
+    error_log('Product Features: ' . $product_features);
+
     // Prepare the prompt for the OpenAI API
     $prompt = "Write a product description for a product called '$product_name' with the following features: $product_features";
+    error_log('Prompt: ' . $prompt);
 
     // Make the API call to OpenAI
     $api_key = 'sk-k8q9fBP5u8akez5JuZXbPCccJKy4g7UPerL5GckSldT3BlbkFJgSrgBSvbzWdT_HefJl6pmfwUHFeyDsJyTYV1w2pv4A';  // Replace with your OpenAI API key
@@ -70,6 +78,8 @@ function spdg_generate_product_description() {
         wp_send_json($generated_description);
     }
 
+    // Add a basic response for now to see if it's reaching this point
+    wp_send_json('Test description based on: ' . $product_name);
     wp_die();
 }
 
