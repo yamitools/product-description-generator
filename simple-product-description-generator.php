@@ -73,3 +73,13 @@ function spdg_generate_product_description() {
     wp_die();
 }
 
+function spdg_localize_ajax_url() {
+    ?>
+    <script type="text/javascript">
+        var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+    </script>
+    <?php
+}
+add_action('admin_head', 'spdg_localize_ajax_url');
+
+
