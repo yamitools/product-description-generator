@@ -5,24 +5,29 @@ jQuery(document).ready(function($) {
         var productName = $('#spdg_product_name').val();
         var productFeatures = $('#spdg_product_features').val();
 
-        console.log('Product Name: ', productName);
-        console.log('Product Features: ', productFeatures);
+        if (!productName || !productFeatures) {
+            alert('Please enter a product name and features.');
+            return;
+        }
 
         $.ajax({
-            url: ajaxurl,  // WordPress-specific variable that points to admin-ajax.php
+            url: spdg_ajax.ajaxurl,
             type: 'POST',
             data: {
                 action: 'generate_product_description',
                 product_name: productName,
-                product_features: productFeatures
+                product_features: productFeatures,
+                nonce: spdg_ajax.nonce
             },
             success: function(response) {
-                console.log('Response from server: ', response);
-                $('#spdg_generated_description').val(response);
+                if (response.success) {
+                    $('#spdg_generated_description').val(response.data);
+                } else {
+                    alert('Error: ' + response.data);
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.log('AJAX Error: ', textStatus, errorThrown);
-                alert('Failed to generate description. Please try again.');
+                alert('AJAX Error: ' + textStatus + ' - ' + errorThrown);
             }
         });
     });
