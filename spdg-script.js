@@ -20,6 +20,7 @@ jQuery(document).ready(function($) {
                 nonce: spdg_ajax.nonce
             },
             success: function(response) {
+                console.log(response);  // Debug code to see the output of the response
                 if (response.success) {
                     $('#spdg_generated_description').val(response.data);
                 } else {
